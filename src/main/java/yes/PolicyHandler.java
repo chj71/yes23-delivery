@@ -15,11 +15,22 @@ public class PolicyHandler{
 
     }
 
+    @Autowired
+    DeliveryRepository deliveryRepository;
+
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverPayConfirmed_Ship(@Payload PayConfirmed payConfirmed){
 
         if(payConfirmed.isMe()){
             System.out.println("##### listener Ship : " + payConfirmed.toJson());
+
+            Delivery delivery = new Delivery();
+            delivery.setOrderId(payConfirmed.getOrderId().toString());
+            delivery.setStatus("Shipping");
+            delivery.setDeliveryInfo("Delivery Info");
+
+            deliveryRepository.save(delivery);
+
         }
     }
 
